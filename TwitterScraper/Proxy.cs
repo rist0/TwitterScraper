@@ -9,20 +9,20 @@ namespace TwitterScraper
 {
     class Proxy
     {
-        private string IpAddress;
-        private string Port;
-        private string UserName;
-        private string UserPassword;
+        private readonly string _ipAddress;
+        private readonly string _port;
+        private readonly string _userName;
+        private readonly string _userPassword;
 
-        public WebProxy webProxy
+        public WebProxy WebProxy
         {
             get
             {
-                if (Uri.IsWellFormedUriString("http://" + IpAddress + ":" + Port, UriKind.Absolute))
+                if (Uri.IsWellFormedUriString("http://" + _ipAddress + ":" + _port, UriKind.Absolute))
                 {
-                    return new WebProxy(IpAddress + ":" + Port)
+                    return new WebProxy(_ipAddress + ":" + _port)
                     {
-                        Credentials = new NetworkCredential(UserName, UserPassword)
+                        Credentials = new NetworkCredential(_userName, _userPassword)
                     };
                 }
                 return null;
@@ -37,13 +37,13 @@ namespace TwitterScraper
         {
             if (input.Split(delimiter).Count() == 2)
             {
-                IpAddress = input.Split(delimiter)[0];
-                Port = input.Split(delimiter)[1];
+                _ipAddress = input.Split(delimiter)[0];
+                _port = input.Split(delimiter)[1];
             }
             else if (input.Split(delimiter).Count() == 4)
             {
-                UserName = input.Split(delimiter)[2];
-                UserPassword = input.Split(delimiter)[3];
+                _userName = input.Split(delimiter)[2];
+                _userPassword = input.Split(delimiter)[3];
             }
         }
 

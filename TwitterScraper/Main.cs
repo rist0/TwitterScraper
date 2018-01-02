@@ -10,24 +10,26 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using TwitterScraper.Exceptions;
+using TwitterScraper.Scraper;
 
 namespace TwitterScraper
 {
     public partial class Main : Form
     {
-        private IScraper _scraper;
+        private readonly IScraper _scraper;
         private Proxy _proxy;
-        private Export _export;
-        CancellationTokenSource cts;
+        private readonly Export.Export _export;
+        private readonly CancellationTokenSource cts;
         CancellationToken ct;
-        int index = 0;
+        private int _index = 0;
 
         public Main()
         {
             InitializeComponent();
             _scraper = new MyTwitterScraper();
             _proxy = new Proxy();
-            _export = new Export();
+            _export = new Export.Export();
             cts = new CancellationTokenSource();
             ct = cts.Token;
         }
@@ -41,7 +43,7 @@ namespace TwitterScraper
         {
             if(!ValidateInput())
             {
-                MessageBox.Show("Invalid input, check your input/settings before trying again.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(@"Invalid input, check your input/settings before trying again.", @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
@@ -73,12 +75,12 @@ namespace TwitterScraper
                             {
                                 try
                                 {
-                                    TwitterScraperData scraperData = await _scraper.GetDetails(txtUserAgent.Text, user, Convert.ToDouble(txtRequestTimeout.Text), _proxy.webProxy);
+                                    TwitterScraperData scraperData = await _scraper.GetDetails(txtUserAgent.Text, user, Convert.ToDouble(txtRequestTimeout.Text), _proxy.WebProxy);
                                     AddItemsToDgv(scraperData);
                                 }
                                 catch(Exception ex)
                                 {
-                                    Console.WriteLine("Error msg: {0}, index: {1}, users.Count: {2}", ex.Message, i, users.Count);
+                                    Console.WriteLine(@"Error msg: {0}, index: {1}, users.Count: {2}", ex.Message, i, users.Count);
                                 }
                                 finally
                                 {
@@ -95,13 +97,13 @@ namespace TwitterScraper
             {
                 try
                 {
-                    TwitterScraperData scraperData = await _scraper.GetDetails(txtUserAgent.Text, txtInput.Text, Convert.ToDouble(txtRequestTimeout.Text), _proxy.webProxy);
+                    TwitterScraperData scraperData = await _scraper.GetDetails(txtUserAgent.Text, txtInput.Text, Convert.ToDouble(txtRequestTimeout.Text), _proxy.WebProxy);
 
                     AddItemsToDgv(scraperData);
                 }
                 catch(InvalidUsernameException ex)
                 {
-                    Console.WriteLine(ex.Message);
+                    Console.WriteLine(@"Error msg: " + ex.Message);
                 }
                 
             }
@@ -109,10 +111,10 @@ namespace TwitterScraper
 
         private void AddItemsToDgv(TwitterScraperData data)
         {
-            this.Invoke((MethodInvoker)delegate ()
+            Invoke((MethodInvoker)delegate
             {
                 dgvItems.Rows.Add(
-                            index++,
+                            _index++,
                             data.Username,
                             data.UserAmountOfTweets,
                             data.UserAmountOfFollowings,
@@ -134,7 +136,7 @@ namespace TwitterScraper
             {
                 using (OpenFileDialog ofd = new OpenFileDialog())
                 {
-                    ofd.Filter = "Text Files (*.txt)|*.txt|All Files (*.*)|*.*";
+                    ofd.Filter = @"Text Files (*.txt)|*.txt|All Files (*.*)|*.*";
                     ofd.RestoreDirectory = true;
 
                     if (ofd.ShowDialog() == DialogResult.OK)
@@ -163,7 +165,7 @@ namespace TwitterScraper
             return true;
         }
 
-        private async void onAppStart()
+        private async void OnAppStart()
         {
             // Deserialize object for settings
             Settings s = Serialize.LoadUserData(Application.StartupPath + "\\data\\data.bin");
@@ -184,37 +186,39 @@ namespace TwitterScraper
 
             // Group box: Version
             lblCurrentVersion.Text += Helper.GetCurrentVersion();
-            lblLatestVersion.Text += await Helper.GetLatestVersion(txtUserAgent.Text, Convert.ToDouble(txtRequestTimeout.Text), _proxy.webProxy);
+            lblLatestVersion.Text += await Helper.GetLatestVersion(txtUserAgent.Text, Convert.ToDouble(txtRequestTimeout.Text), _proxy.WebProxy);
 
             // Group box: News
-            txtNews.Text = await Helper.GetLatestNews(txtUserAgent.Text, Convert.ToDouble(txtRequestTimeout.Text), _proxy.webProxy);
+            txtNews.Text = await Helper.GetLatestNews(txtUserAgent.Text, Convert.ToDouble(txtRequestTimeout.Text), _proxy.WebProxy);
 
             // Group box: Changelog
-            txtChangelog.Text = await Helper.GetChangelog(txtUserAgent.Text, Convert.ToDouble(txtRequestTimeout.Text), _proxy.webProxy);
+            txtChangelog.Text = await Helper.GetChangelog(txtUserAgent.Text, Convert.ToDouble(txtRequestTimeout.Text), _proxy.WebProxy);
         }
 
-        private void onAppExit()
+        private void OnAppExit()
         {
-            Settings s = new Settings();
-            s.CsvDelimiter = txtCsvDelimiter.Text;
-            s.DumpDebugData = cbDumpDebugLogs.Checked;
-            s.OutputDirectory = txtOutput.Text;
-            s.Proxy = txtProxy.Text;
-            s.RequestTimeout = txtRequestTimeout.Text;
-            s.Threads = txtThreads.Text;
-            s.UserAgent = txtUserAgent.Text;
+            Settings s = new Settings
+            {
+                CsvDelimiter = txtCsvDelimiter.Text,
+                DumpDebugData = cbDumpDebugLogs.Checked,
+                OutputDirectory = txtOutput.Text,
+                Proxy = txtProxy.Text,
+                RequestTimeout = txtRequestTimeout.Text,
+                Threads = txtThreads.Text,
+                UserAgent = txtUserAgent.Text
+            };
 
             Serialize.SaveUserData(s);
         }
 
         private void Main_Load(object sender, EventArgs e)
         {
-            onAppStart();
+            OnAppStart();
         }
 
         private void Main_FormClosing(object sender, FormClosingEventArgs e)
         {
-            onAppExit();
+            OnAppExit();
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -227,7 +231,7 @@ namespace TwitterScraper
             using (FolderBrowserDialog fbd = new FolderBrowserDialog())
             {
                 fbd.ShowNewFolderButton = true;
-                fbd.Description = "Export data folder";
+                fbd.Description = @"Export data folder";
                 if(fbd.ShowDialog() == DialogResult.OK)
                 {
                     txtOutput.Text = fbd.SelectedPath;
@@ -238,12 +242,12 @@ namespace TwitterScraper
         private void btnClearAll_Click(object sender, EventArgs e)
         {
             dgvItems.Rows.Clear();
-            index = 0;
+            _index = 0;
         }
 
         private void removeFilters_Click(object sender, EventArgs e)
         {
-            ToolStripMenuItem t = sender as ToolStripMenuItem;
+            if (!(sender is ToolStripMenuItem t)) return;
             
             switch(t.Name)
             {
@@ -278,9 +282,6 @@ namespace TwitterScraper
                 case "removeLessThanLikes":
                     dgvItems = Filters.FilterLikes(dgvItems, true, Convert.ToInt32(removeLessThanLikesTextBox.Text));
                     break;
-
-                default:
-                    break;
             }
         }
 
@@ -293,13 +294,13 @@ namespace TwitterScraper
                 _export.SavePath = txtOutput.Text;
                 _export.FileName = DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss", CultureInfo.InvariantCulture);
 
-                ToolStripMenuItem t = sender as ToolStripMenuItem;
+                if (!(sender is ToolStripMenuItem t)) return;
 
                 switch (t.Name)
                 {
                     case "allDataToolStripMenuItem":
                         if (dgvItems.Rows.Count > 0)
-                        { 
+                        {
                             _export.ExportAllData();
                         }
                         break;
@@ -309,13 +310,11 @@ namespace TwitterScraper
                             _export.ExportSelectedRows();
                         }
                         break;
-                    default:
-                        break;
                 }
             }
             else
             {
-                MessageBox.Show("Invalid input, check your settings before trying again.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(@"Invalid input, check your settings before trying again.", @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }

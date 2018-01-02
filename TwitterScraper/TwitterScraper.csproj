@@ -64,7 +64,6 @@
     <Compile Include="Serialization\Serialize.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Scraper\TwitterScraper.cs" />
-    <Compile Include="Validation.cs" />
     <EmbeddedResource Include="Main.resx">
       <DependentUpon>Main.cs</DependentUpon>
     </EmbeddedResource>

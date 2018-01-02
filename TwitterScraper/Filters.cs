@@ -103,11 +103,7 @@ namespace TwitterScraper
             {
                 if (hasWebsite)
                 {
-                    
-                }
-                else
-                {
-                    
+                    // TODO: Add logic
                 }
             }
             return gridIn;

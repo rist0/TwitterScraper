@@ -10,28 +10,29 @@ namespace TwitterScraper
 {
     class Request : IDisposable
     {
-        private HttpClient httpClient;
-        private HttpClientHandler httpClientHandler;
+        private readonly HttpClient _httpClient;
+        private readonly HttpClientHandler _httpClientHandler;
 
         public Request(string ua, double timeOut, WebProxy proxy)
         {
-            httpClientHandler = new HttpClientHandler();
-            httpClientHandler.Proxy = proxy;
+            _httpClientHandler = new HttpClientHandler();
+            _httpClientHandler.Proxy = proxy;
 
-            httpClient = new HttpClient(httpClientHandler);
-            httpClient.Timeout = TimeSpan.FromSeconds(timeOut);
-            httpClient.DefaultRequestHeaders.Add("User-Agent", ua);
+            _httpClient = new HttpClient(_httpClientHandler)
+            {
+                Timeout = TimeSpan.FromSeconds(timeOut)
+            };
+            _httpClient.DefaultRequestHeaders.Add("User-Agent", ua);
 
         }
 
-        public async Task<string> requestString(string uri)
+        public async Task<string> RequestString(string uri)
         {
-            string response;
             try
             {
-                using (HttpResponseMessage responseMessage = await httpClient.GetAsync(uri))
+                using (HttpResponseMessage responseMessage = await _httpClient.GetAsync(uri))
                 {
-                    response = await responseMessage.Content.ReadAsStringAsync();
+                    var response = await responseMessage.Content.ReadAsStringAsync();
                     return response;
                 }
             }
@@ -43,8 +44,8 @@ namespace TwitterScraper
 
         public void Dispose()
         {
-            httpClient.Dispose();
-            httpClientHandler.Dispose();
+            _httpClient.Dispose();
+            _httpClientHandler.Dispose();
         }
     }
 }

@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 using System.Windows.Forms;
 
-namespace TwitterScraper
+namespace TwitterScraper.Export
 {
     public class Export
     {
@@ -15,7 +10,7 @@ namespace TwitterScraper
         public string FileName { get; set; }
         public string Delimiter { get; set; }
 
-        private void WriteCSV(bool selected = false)
+        private void WriteCsv(bool selected = false)
         {
             if (GridIn.RowCount > 0)
             {
@@ -87,12 +82,12 @@ namespace TwitterScraper
 
         public void ExportAllData()
         {
-            WriteCSV();
+            WriteCsv();
         }
 
         public void ExportSelectedRows()
         {
-            WriteCSV(true);
+            WriteCsv(true);
         }
     }
 }

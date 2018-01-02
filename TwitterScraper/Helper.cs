@@ -1,11 +1,7 @@
 ﻿using System;
 using System.IO;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Net.Http;
 using System.Net;
 
 namespace TwitterScraper
@@ -17,7 +13,7 @@ namespace TwitterScraper
             string changeLog;
             using (Request r = new Request(ua, timeout, proxy))
             {
-                changeLog = await r.requestString("http://smmnova.com/tools/twitter/twitterscraper/changelog.txt");
+                changeLog = await r.RequestString("http://smmnova.com/tools/twitter/twitterscraper/changelog.txt");
             }
             return changeLog.Replace("\n", Environment.NewLine);
         }
@@ -27,7 +23,7 @@ namespace TwitterScraper
             string news;
             using (Request r = new Request(ua, timeout, proxy))
             {
-                news = await r.requestString("http://smmnova.com/tools/twitter/twitterscraper/news.txt");
+                news = await r.RequestString("http://smmnova.com/tools/twitter/twitterscraper/news.txt");
             }
             return news.Replace("\n", Environment.NewLine);
         }
@@ -37,7 +33,7 @@ namespace TwitterScraper
             string version;
             using (Request r = new Request(ua, timeout, proxy))
             {
-                version = await r.requestString("http://smmnova.com/tools/twitter/twitterscraper/latestversion.txt");
+                version = await r.RequestString("http://smmnova.com/tools/twitter/twitterscraper/latestversion.txt");
             }
             return version;
         }
