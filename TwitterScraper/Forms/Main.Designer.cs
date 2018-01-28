@@ -1,4 +1,4 @@
-﻿namespace TwitterScraper
+﻿namespace TwitterScraper.Forms
 {
     partial class Main
     {
@@ -268,7 +268,6 @@
             this.rbFromFile.Name = "rbFromFile";
             this.rbFromFile.Size = new System.Drawing.Size(67, 17);
             this.rbFromFile.TabIndex = 3;
-            this.rbFromFile.TabStop = true;
             this.rbFromFile.Text = "From File";
             this.rbFromFile.UseVisualStyleBackColor = true;
             this.rbFromFile.CheckedChanged += new System.EventHandler(this.rbFromFile_CheckedChanged);
@@ -276,6 +275,7 @@
             // rbSingleUser
             // 
             this.rbSingleUser.AutoSize = true;
+            this.rbSingleUser.Checked = true;
             this.rbSingleUser.Location = new System.Drawing.Point(22, 19);
             this.rbSingleUser.Name = "rbSingleUser";
             this.rbSingleUser.Size = new System.Drawing.Size(79, 17);
@@ -627,7 +627,7 @@
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(92, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -643,14 +643,14 @@
             // allDataToolStripMenuItem
             // 
             this.allDataToolStripMenuItem.Name = "allDataToolStripMenuItem";
-            this.allDataToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.allDataToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
             this.allDataToolStripMenuItem.Text = "All data";
             this.allDataToolStripMenuItem.Click += new System.EventHandler(this.ExportData);
             // 
             // selectedRowsToolStripMenuItem
             // 
             this.selectedRowsToolStripMenuItem.Name = "selectedRowsToolStripMenuItem";
-            this.selectedRowsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.selectedRowsToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
             this.selectedRowsToolStripMenuItem.Text = "Selected rows";
             this.selectedRowsToolStripMenuItem.Click += new System.EventHandler(this.ExportData);
             // 
@@ -671,7 +671,7 @@
             this.moreThanToolStripMenuItem,
             this.lessMoreThanTweets});
             this.tweetsToolStripMenuItem.Name = "tweetsToolStripMenuItem";
-            this.tweetsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.tweetsToolStripMenuItem.Size = new System.Drawing.Size(131, 22);
             this.tweetsToolStripMenuItem.Text = "Tweets";
             // 
             // moreThanToolStripMenuItem
@@ -680,7 +680,7 @@
             this.removeMoreThanTweetsTextBox,
             this.removeMoreThanTweets});
             this.moreThanToolStripMenuItem.Name = "moreThanToolStripMenuItem";
-            this.moreThanToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.moreThanToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
             this.moreThanToolStripMenuItem.Text = "More than";
             // 
             // removeMoreThanTweetsTextBox
@@ -701,7 +701,7 @@
             this.removeLessThanTweetsTextBox,
             this.removeLessThanTweets});
             this.lessMoreThanTweets.Name = "lessMoreThanTweets";
-            this.lessMoreThanTweets.Size = new System.Drawing.Size(152, 22);
+            this.lessMoreThanTweets.Size = new System.Drawing.Size(129, 22);
             this.lessMoreThanTweets.Text = "Less than";
             // 
             // removeLessThanTweetsTextBox
@@ -722,7 +722,7 @@
             this.moreThanToolStripMenuItem1,
             this.lessThanToolStripMenuItem});
             this.followingsToolStripMenuItem.Name = "followingsToolStripMenuItem";
-            this.followingsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.followingsToolStripMenuItem.Size = new System.Drawing.Size(131, 22);
             this.followingsToolStripMenuItem.Text = "Followings";
             // 
             // moreThanToolStripMenuItem1
@@ -773,7 +773,7 @@
             this.moreThanToolStripMenuItem2,
             this.lessThanToolStripMenuItem1});
             this.followersToolStripMenuItem.Name = "followersToolStripMenuItem";
-            this.followersToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.followersToolStripMenuItem.Size = new System.Drawing.Size(131, 22);
             this.followersToolStripMenuItem.Text = "Followers";
             // 
             // moreThanToolStripMenuItem2
@@ -825,7 +825,7 @@
             this.moreThanToolStripMenuItem3,
             this.lessThanToolStripMenuItem2});
             this.likesToolStripMenuItem.Name = "likesToolStripMenuItem";
-            this.likesToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.likesToolStripMenuItem.Size = new System.Drawing.Size(131, 22);
             this.likesToolStripMenuItem.Text = "Likes";
             // 
             // moreThanToolStripMenuItem3

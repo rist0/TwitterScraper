@@ -3,7 +3,7 @@ using System.Windows.Forms;
 
 namespace TwitterScraper.Export
 {
-    public class Export
+    class CsvExport
     {
         public DataGridView GridIn { get; set; }
         public string SavePath { get; set; }
@@ -53,14 +53,14 @@ namespace TwitterScraper.Export
                             swOut.Write(Delimiter);
                         }
 
-                        if(!selected)
+                        if (!selected)
                         {
                             value = row.Cells[j].Value.ToString();
                             swOut.Write("\"" + value + "\"");
                         }
                         else
                         {
-                            if(row.Selected)
+                            if (row.Selected)
                             {
                                 value = row.Cells[j].Value.ToString();
                                 swOut.Write("\"" + value + "\"");

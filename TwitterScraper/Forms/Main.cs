@@ -1,37 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using TwitterScraper.Exceptions;
+using TwitterScraper.Export;
 using TwitterScraper.Scraper;
+using TwitterScraper.Serialization;
 
-namespace TwitterScraper
+namespace TwitterScraper.Forms
 {
     public partial class Main : Form
     {
         private readonly IScraper _scraper;
         private Proxy _proxy;
-        private readonly Export.Export _export;
-        private readonly CancellationTokenSource cts;
-        CancellationToken ct;
-        private int _index = 0;
+        private readonly CsvExport _export;
+        //private CancellationTokenSource _cts;
+        //private CancellationToken _ct;
+        private int _index;
 
         public Main()
         {
             InitializeComponent();
             _scraper = new MyTwitterScraper();
             _proxy = new Proxy();
-            _export = new Export.Export();
-            cts = new CancellationTokenSource();
-            ct = cts.Token;
+            _export = new CsvExport();
+            //_cts = new CancellationTokenSource();
+            //_ct = _cts.Token;
+            _index = 0;
         }
 
         private void btnRandomizeUserAgent_Click(object sender, EventArgs e)
@@ -52,7 +49,7 @@ namespace TwitterScraper
                 _proxy = new Proxy(txtProxy.Text, ':');
             }
             
-            List<string> users = new List<string>();
+            var users = new List<string>();
 
             if(rbFromFile.Checked)
             {
@@ -61,32 +58,35 @@ namespace TwitterScraper
                     users.Add(s);
                 }
 
-                List<Task> tasks = new List<Task>();
+                var tasks = new List<Task>();
+                _scraper.DebugMode = cbDumpDebugLogs.Checked;
 
-                using (SemaphoreSlim semaphore = new SemaphoreSlim(Convert.ToInt32(txtThreads.Text)))
+                using (var semaphore = new SemaphoreSlim(Convert.ToInt32(txtThreads.Text)))
                 {
-                    for(int i = 0; i < users.Count; i++)
+                    foreach (string user in users)
                     {
-                        string user = users[i]; // why?
                         await semaphore.WaitAsync();
 
-                        tasks.Add(
-                            Task.Run(async () =>
-                            {
-                                try
+                        try
+                        {
+                            tasks.Add(
+                                Task.Run(async () =>
                                 {
-                                    TwitterScraperData scraperData = await _scraper.GetDetails(txtUserAgent.Text, user, Convert.ToDouble(txtRequestTimeout.Text), _proxy.WebProxy);
-                                    AddItemsToDgv(scraperData);
-                                }
-                                catch(Exception ex)
-                                {
-                                    Console.WriteLine(@"Error msg: {0}, index: {1}, users.Count: {2}", ex.Message, i, users.Count);
-                                }
-                                finally
-                                {
-                                    semaphore.Release();
-                                }
-                            }));
+                                    try
+                                    {
+                                        TwitterScraperData scraperData = await _scraper.GetDetails(txtUserAgent.Text, user, Convert.ToDouble(txtRequestTimeout.Text), _proxy.WebProxy);
+                                        AddItemsToDgv(scraperData);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        Console.WriteLine(@"Error msg: {0}, stack trace: {1}", ex.Message, ex.StackTrace);
+                                    }
+                                }));
+                        }
+                        finally
+                        {
+                            semaphore.Release();
+                        }
                     }
 
                     await Task.WhenAll(tasks);
@@ -132,17 +132,16 @@ namespace TwitterScraper
 
         private void rbFromFile_CheckedChanged(object sender, EventArgs e)
         {
-            if(rbFromFile.Checked)
-            {
-                using (OpenFileDialog ofd = new OpenFileDialog())
-                {
-                    ofd.Filter = @"Text Files (*.txt)|*.txt|All Files (*.*)|*.*";
-                    ofd.RestoreDirectory = true;
+            if (!rbFromFile.Checked) return;
 
-                    if (ofd.ShowDialog() == DialogResult.OK)
-                    {
-                        txtInput.Text = ofd.FileName;
-                    }
+            using (var ofd = new OpenFileDialog())
+            {
+                ofd.Filter = @"Text Files (*.txt)|*.txt|All Files (*.*)|*.*";
+                ofd.RestoreDirectory = true;
+
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    txtInput.Text = ofd.FileName;
                 }
             }
         }
@@ -228,7 +227,7 @@ namespace TwitterScraper
         
         private void btnOutputFolder_Click(object sender, EventArgs e)
         {
-            using (FolderBrowserDialog fbd = new FolderBrowserDialog())
+            using (var fbd = new FolderBrowserDialog())
             {
                 fbd.ShowNewFolderButton = true;
                 fbd.Description = @"Export data folder";
